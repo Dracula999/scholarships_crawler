@@ -107,4 +107,4 @@ def main():
 if __name__ == '__main__':
     res = main()
     df = pd.DataFrame(res)
-    df.to_excel('data/%s.xlsx' % str(datetime.datetime.now()))
+    df.to_excel('%s.xlsx' % str(datetime.datetime.now()))
