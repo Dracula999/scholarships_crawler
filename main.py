@@ -16,7 +16,7 @@ country_xp = './/p[span[@class="icon where"]]/text()'
 deadline_xp = './/p[span[@class="icon deadline"]]/text()'
 link_xp = './/a[contains(text(), "на") and contains(text(), "сайте")]/@href'
 
-level_xp = './/div[@class="entry-content"]//*[contains(text(), "%s")]'
+level_xp = './/div[contains(@class, "entry-content")]//*[contains(text(), "%s")]'
 requirements_xp = './/*[contains(text(), "%s")]/following-sibling::*[1]/li'
 img_url = './/div[@class="entry-content"]//img/@src'
 
@@ -30,6 +30,19 @@ headers = {
             'Accept-Language': "en-US,en;q=0.5",
             'Content-Type': 'application/json; charset=utf-8'
         }
+
+
+def get_levels(tree):
+    levels = []
+    for i, level_keyword in enumerate(level_keywords):
+        level = tree.xpath(level_xp % level_keyword)
+        if len(level) > 0:
+            levels.append(levels_eng[i])
+    levels = list(set(levels))
+    if len(levels) > 0:
+        levels = ', '.join(levels)
+        return levels
+    return None
 
 
 def main():
@@ -68,17 +81,9 @@ def main():
                         sc['Country'] = country
                     except Exception as e:
                         print(e)
-
-                    levels = []
-                    for i, level_keyword in enumerate(level_keywords):
-                        level = tree.xpath(level_xp % level_keyword)
-                        if len(level) > 0:
-                            levels.append(levels_eng[i])
-                    levels = list(set(levels))
-                    if len(levels) > 0:
-                        levels = ', '.join(levels)
+                    levels = get_levels(tree)
+                    if levels:
                         sc['Level'] = levels
-
                     deadline = tree.xpath(deadline_xp)
                     if len(deadline) > 0:
                         deadline = deadline[0]
